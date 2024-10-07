@@ -14,6 +14,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -41,12 +42,6 @@ fun App() {
     val exampleService = ServiceProvider.getService(ServiceKeys.ExampleServiceKey)
 
     val disposable = remember { Disposable("main") }
-
-    val e1 by LocalExampleService.prototype()
-    val e2 by LocalExampleService.prototype()
-
-    println(e1)
-    println(e2)
 
     someService?.start()
 
