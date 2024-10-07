@@ -22,6 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.WindowPlacement
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
 
@@ -66,10 +67,10 @@ fun App() {
             )
 
             Box(
-                contentAlignment = Alignment.Center,
                 modifier = Modifier
                     .fillMaxSize()
                     .background(MaterialTheme.colors.background),
+                contentAlignment = Alignment.Center,
             ) {
 
                 Column(
@@ -77,14 +78,14 @@ fun App() {
                 ) {
 
                     Button(
-                        onClick = {
-                            model.updateText("Hello, Desktop!")
-                            disposable.dispose()
-                        },
                         modifier = Modifier.background(
                             color = MaterialTheme.colors.primary,
                             shape = RoundedCornerShape(50f)
                         ),
+                        onClick = {
+                            model.updateText("Hello, Desktop!")
+                            disposable.dispose()
+                        },
                         shape = RoundedCornerShape(50f)
                     ) {
                         Text(text)
@@ -93,13 +94,13 @@ fun App() {
                     Spacer(modifier = Modifier.height(16.dp))
 
                     Button(
-                        onClick = {
-                            model.stopApplication()
-                        },
                         modifier = Modifier.background(
                             color = MaterialTheme.colors.primary,
                             shape = RoundedCornerShape(50f)
                         ),
+                        onClick = {
+                            model.stopApplication()
+                        },
                         shape = RoundedCornerShape(50f)
                     ) {
                         Text("Exit $counter")
@@ -139,18 +140,14 @@ fun App() {
 
                     model.lifecycleFlow.emit(Lifecycle.Started)
                 }
+                .onCompletion {
+
+                    model.lifecycleFlow.emit(Lifecycle.Stopped)
+                }
                 .onEach {
 
                     println("onEach: ${Thread.currentThread().name} $it")
                     model.incrementCounter()
-                }
-                .takeUntil { timerFlowDisposable.isDisposed() }
-                .onEach {
-
-                    if (disposable.isDisposed()) {
-
-                        model.lifecycleFlow.emit(Lifecycle.Stopped)
-                    }
                 }
                 .takeUntil { disposable.isDisposed() }
                 .launchIn(scope)
